@@ -79,10 +79,22 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 （storePassword / keyPassword `android`，alias `androiddebugkey`），便于与官方版共存并
 持续覆盖升级。正式分发时请用 `-PMYAPP_UPLOAD_STORE_FILE=...` 等参数提供自己的签名。
 
-## 当前状态
+## 当前状态（2026-11-09）
 
-- JS bundle 已独立打包验证通过；Android 编译进行中/见提交记录。
-- **实车调试尚未进行**：车机媒体中心的音源注册包名、恢复回调、歌词与控制动作
-  需要在领克 900（Flyme Auto）上实测确认。
-- 换包名后音源标识变为 `cn.toside.music.mobile.flyme`，若车机音源列表仍按
-  `cn.toside.music.mobile` 索引，可在 `ProxyConfig.DEFAULT_TARGET` 中调整。
+- Metro JS bundle 独立打包通过；`./gradlew assembleRelease` **BUILD SUCCESSFUL**
+  （Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1，635 个任务）。
+- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,890,521 B，
+  sha256 `f03f02a7b8c67a19b…`；包名 `cn.toside.music.mobile.flyme`，
+  versionCode 79 / versionName 1.9.2，签名 `CN=Android Debug`（仓库自带 debug.keystore）。
+- **实车调试尚未进行**（当时车机不在线），上线后按下面清单验证。
+
+## 实机验证清单
+
+1. 安装：`adb install --user 12 -r <universal.apk>`；与官方版共存，数据目录独立。
+2. 首次启动后在媒体中心音源列表里重新选择本应用（包名已变）。
+3. 确认日志 tag `CarProxy` 出现 `registerInMusic(19)`、`requestPlay=true`、
+   `[nup] push 完成`、音源条目写回 `含本应用=true`。
+4. 播放中检查 HUD 歌词、封面、进度、播放/暂停图标是否随 RN 事件即时更新。
+5. 媒体中心与方向盘 / 手扶箱按键：play / pause / next / previous 是否落到LX Music。
+6. 切到别的音源再切回：验证 `RecoverReceiver` 能否重新注册并续播。
+7. 若音源列表仍按旧包名 `cn.toside.music.mobile` 索引，调整 `ProxyConfig.DEFAULT_TARGET`。
