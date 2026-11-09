@@ -199,6 +199,20 @@ public final class MediaCenterBridge {
             CarMusicSource.install(appCtx);
             CarMusicSource.startKeepAlive();
             CarMusicSource.dumpConfig();
+
+            // 首次注册时车机可能已经把本音源切到前台并停在「加载中」，
+            // 单靠一次 pushState 有时不会触发卡片刷新，补推两次确保数据落地。
+            final long[] delays = {800L, 2500L};
+            for (long d : delays) {
+                main.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!ready || token == null) return;
+                        pushState();
+                        pushLyric();
+                    }
+                }, d);
+            }
         } catch (Throwable t) {
             ProxyConfig.log("[nfull] register 失败: " + t);
         }

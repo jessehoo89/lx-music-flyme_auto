@@ -3,7 +3,6 @@ import { View, TouchableHighlight } from 'react-native'
 
 import Modal, { type ModalType } from './Modal'
 import { Icon } from '@/components/common/Icon'
-import { useKeyboard } from '@/utils/hooks'
 import { createStyle } from '@/utils/tools'
 import { useTheme } from '@/store/theme/hook'
 import Text from './Text'
@@ -80,7 +79,6 @@ export default forwardRef<DialogType, DialogProps>(({
   height,
 }: DialogProps, ref) => {
   const theme = useTheme()
-  const { keyboardShown, keyboardHeight } = useKeyboard()
   const modalRef = useRef<ModalType>(null)
 
   useImperativeHandle(ref, () => ({
@@ -99,7 +97,8 @@ export default forwardRef<DialogType, DialogProps>(({
 
   return (
     <Modal onHide={onHide} keyHide={keyHide} bgHide={bgHide} bgColor="rgba(50,50,50,.3)" ref={modalRef}>
-      <View style={{ ...styles.centeredView, paddingBottom: keyboardShown ? keyboardHeight : 0 }}>
+      {/* 车机输入法为浮层，不再按键盘高度二次压缩弹窗，避免超宽屏渲染撕裂。 */}
+      <View style={styles.centeredView}>
         <View style={{ ...styles.modalView, height, backgroundColor: theme['c-content-background'] }} onStartShouldSetResponder={() => true}>
           <View style={{ ...styles.header, backgroundColor: theme['c-primary-light-100-alpha-100'] }}>
             <Text style={styles.title} size={13} color={theme['c-primary-light-1000']} numberOfLines={1}>{title}</Text>

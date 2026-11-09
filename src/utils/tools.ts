@@ -242,86 +242,15 @@ export const clipboardWriteText = (str: string) => {
 
 
 export const checkNotificationPermission = async() => {
-  const isHide = await getData(storageDataPrefix.notificationTipEnable)
-  if (isHide != null) return
-  const enabled = await isNotificationsEnabled()
-  if (enabled) return
-  return new Promise<void>((resolve) => {
-    Alert.alert(
-      global.i18n.t('notifications_check_title'),
-      global.i18n.t('notifications_check_tip'),
-      [
-        {
-          text: global.i18n.t('never_show'),
-          onPress: () => {
-            void saveData(storageDataPrefix.notificationTipEnable, '1')
-            toast(global.i18n.t('disagree_tip'))
-            resolve()
-          },
-        },
-        {
-          text: global.i18n.t('disagree'),
-          onPress: () => {
-            toast(global.i18n.t('disagree_tip'))
-            resolve()
-          },
-        },
-        {
-          text: global.i18n.t('agree_go'),
-          onPress: () => {
-            requestAnimationFrame(() => {
-              void requestNotificationPermission().then((result) => {
-                if (!result) toast(global.i18n.t('disagree_tip'))
-                resolve()
-              })
-            })
-          },
-        },
-      ],
-    )
-  })
+  // 车机版：不读取其它 App 的 MediaSession，不需要通知使用权；
+  // 且这个弹窗原先被 handlePlay 用 await 等待，会阻塞首次播放初始化。
+  return
 }
 
 
 export const checkIgnoringBatteryOptimization = async() => {
-  const isHide = await getData(storageDataPrefix.ignoringBatteryOptimizationTipEnable)
-  if (isHide != null) return
-  const enabled = await isIgnoringBatteryOptimization()
-  if (enabled) return
-  return new Promise<void>((resolve) => {
-    Alert.alert(
-      global.i18n.t('ignoring_battery_optimization_check_title'),
-      global.i18n.t('ignoring_battery_optimization_check_tip'),
-      [
-        {
-          text: global.i18n.t('never_show'),
-          onPress: () => {
-            void saveData(storageDataPrefix.ignoringBatteryOptimizationTipEnable, '1')
-            toast(global.i18n.t('disagree_tip'))
-            resolve()
-          },
-        },
-        {
-          text: global.i18n.t('disagree'),
-          onPress: () => {
-            toast(global.i18n.t('disagree_tip'))
-            resolve()
-          },
-        },
-        {
-          text: global.i18n.t('agree_to'),
-          onPress: () => {
-            requestAnimationFrame(() => {
-              void requestIgnoreBatteryOptimization().then((result) => {
-                if (!result) toast(global.i18n.t('disagree_tip'))
-                resolve()
-              })
-            })
-          },
-        },
-      ],
-    )
-  })
+  // 车机为常供电设备，不需要电池优化白名单，也不再弹出提醒。
+  return
 }
 export const resetNotificationPermissionCheck = async() => {
   return removeData(storageDataPrefix.notificationTipEnable)

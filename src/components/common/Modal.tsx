@@ -83,7 +83,7 @@ export default forwardRef<ModalType, ModalProps>(({
     <Modal
       animationType="fade"
       transparent={true}
-      hardwareAccelerated={true}
+      hardwareAccelerated={false}
       statusBarTranslucent={true}
       visible={visible}
       onRequestClose={handleRequestClose}
