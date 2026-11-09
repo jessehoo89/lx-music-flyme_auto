@@ -36,6 +36,11 @@ export const flymeMediaCenter = {
     mod.updateLyric(lyric)
   },
 
+  updateLyricLine(line: string) {
+    if (!available) return
+    mod.updateLyricLine(line)
+  },
+
   updateProgress(position: number) {
     if (!available) return
     mod.updateProgress(position)

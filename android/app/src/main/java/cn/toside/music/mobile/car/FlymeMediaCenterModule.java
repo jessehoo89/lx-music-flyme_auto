@@ -109,6 +109,12 @@ public class FlymeMediaCenterModule extends ReactContextBaseJavaModule {
         MediaCenterBridge.pushLyric();
     }
 
+    /** HUD 单行歌词：车机通过 I_GET_CURRENT_LYRIC_SENTENCE 主动 pull。 */
+    @ReactMethod
+    public void updateLyricLine(String line) {
+        NowPlaying.lyricLine = line == null ? "" : line;
+    }
+
     @ReactMethod
     public void updateProgress(double positionMs) {
         NowPlaying.positionMs = (long) positionMs;

@@ -135,3 +135,10 @@ export const useLrcSet = () => {
   return lines
 }
 
+/**
+ * 供非 React 模块订阅当前歌词行。
+ * 车机媒体中心的 HUD 单行歌词走这里，不依赖 LyricModule 的
+ * 「显示蓝牙歌词」事件开关（那个开关只影响原生 LyricEvent）。
+ */
+export const addLrcPlayHook = (hook: (line: number, text: string) => void) => lrcTools.addPlayHook(hook)
+export const removeLrcPlayHook = (hook: (line: number, text: string) => void) => lrcTools.removePlayHook(hook)

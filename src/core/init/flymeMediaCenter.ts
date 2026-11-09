@@ -1,5 +1,6 @@
 import { flymeMediaCenter } from '@/utils/nativeModules/flymeMediaCenter'
 import playerState from '@/store/player/state'
+import { addLrcPlayHook } from '@/plugins/lyric'
 import { pause, play, playNext, playPrev } from '@/core/player/player'
 
 /**
@@ -9,6 +10,13 @@ import { pause, play, playNext, playPrev } from '@/core/player/player'
  * 不再经过 MediaSession，也不再依赖外部车机助手进程。
  */
 let isInited = false
+/** 当前歌词行由 RN 层歌词播放器直接给出，不依赖「显示蓝牙歌词」开关。 */
+let currentLyricLine = ''
+
+const handleLyricLine = (_line: number, text: string) => {
+  currentLyricLine = text ?? ''
+  flymeMediaCenter.updateLyricLine(currentLyricLine)
+}
 
 const buildState = () => {
   const info = playerState.musicInfo
@@ -21,7 +29,7 @@ const buildState = () => {
     position: Math.max(0, (playerState.progress.nowPlayTime || 0) * 1000),
     playing: !!playerState.isPlay,
     lyric: info.lrc ?? '',
-    lyricLine: playerState.lastLyric ?? '',
+    lyricLine: currentLyricLine,
   }
 }
 
@@ -76,6 +84,10 @@ export default async() => {
   global.app_event.on('musicToggled', () => pushState())
   global.app_event.on('picUpdated', () => pushState())
   global.app_event.on('lyricUpdated', () => pushLyric())
+
+  // 当前歌词行：订阅 RN 层歌词播放器（由 app_event.play / 进度驱动，
+  // 不经过 LyricModule 的「显示蓝牙歌词」事件开关）。
+  addLrcPlayHook(handleLyricLine)
 
   // 初始化时主动推一次全量状态，不能只等下一次事件
   pushState()

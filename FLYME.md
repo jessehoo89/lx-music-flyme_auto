@@ -83,8 +83,8 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 
 - Metro JS bundle 独立打包通过；`./gradlew assembleRelease` **BUILD SUCCESSFUL**
   （Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1，635 个任务）。
-- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,890,521 B，
-  sha256 `f03f02a7b8c67a19b…`；包名 `cn.toside.music.mobile.flyme`，
+- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,890,927 B，
+  sha256 `96bf53c864212711…`（含「歌词链路脱离蓝牙开关」改动）；包名 `cn.toside.music.mobile.flyme`，
   versionCode 79 / versionName 1.9.2，签名 `CN=Android Debug`（仓库自带 debug.keystore）。
 - **实车调试尚未进行**（当时车机不在线），上线后按下面清单验证。
 
@@ -98,3 +98,22 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 5. 媒体中心与方向盘 / 手扶箱按键：play / pause / next / previous 是否落到LX Music。
 6. 切到别的音源再切回：验证 `RecoverReceiver` 能否重新注册并续播。
 7. 若音源列表仍按旧包名 `cn.toside.music.mobile` 索引，调整 `ProxyConfig.DEFAULT_TARGET`。
+
+## 歌词与蓝牙歌词开关
+
+上游的两个设置 **不再是媒体中心显示歌词的前提**，可以保持关闭：
+
+- **显示完整蓝牙歌词**（`player.isShowBluetoothFullLyric`）：只控制
+  `core/lyric.ts` 里的 `updateNowPlayingTitles({ lyric })`，即把整篇 LRC 写进
+  MediaSession 的 `android.media.metadata.LYRICS` 自定义字段。旧的「车机助手」
+  只能从 MediaSession 读歌词，所以必须打开它；本版本直接从
+  `playerState.musicInfo.lrc`（播放时由 `getLyricInfo()` 无条件填充）取数，
+  经 `FlymeMediaCenterModule.updateLyric` → `updateCurrentLyric` 送给媒体中心，
+  完全不经过 MediaSession。
+- **显示蓝牙歌词**（`player.isShowBluetoothLyric`）：只控制原生 `LyricModule`
+  的 `setSendLyricTextEvent`，用于蓝牙 AVRCP 逐行歌词。本版本的 HUD 单行歌词
+  改为订阅 `@/plugins/lyric` 的 `addLrcPlayHook`（RN 层歌词播放器由播放事件驱动），
+  再经 `updateLyricLine` 写入 `NowPlaying.lyricLine` 供车机 pull。
+
+因此媒体中心的「整篇 LRC 滚动」与「HUD 单行歌词」都不依赖这两个开关。
+若仍希望蓝牙设备或系统通知栏显示歌词，可以照旧打开，两者互不影响。
