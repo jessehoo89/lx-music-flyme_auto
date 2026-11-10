@@ -92,14 +92,13 @@ export default forwardRef<HeaderType, HeaderProps>(({ componentId }: { component
 
   return (
     <View style={{ ...styles.container, paddingTop: statusBarHeight, borderBottomColor: theme['c-border-background'] }}>
-      <View style={styles.navBar}>
+      <View style={{ flexDirection: 'row', flexGrow: 0, flexShrink: 0, padding: 10, alignItems: 'center' }}>
+        {/* 返回键与封面、标题同一行，不再单独占一条 */}
         <TouchableOpacity onPress={back} style={styles.backBtn}>
           <Icon name="chevron-left" size={18} />
         </TouchableOpacity>
-      </View>
-      <View style={{ flexDirection: 'row', flexGrow: 0, flexShrink: 0, padding: 10 }}>
         <Pic componentId={componentId} playCount={detailInfo.playCount} imgUrl={detailInfo.imgUrl} />
-        <View style={{ flexDirection: 'column', flexGrow: 1, flexShrink: 1, paddingLeft: 5 }} nativeID={NAV_SHEAR_NATIVE_IDS.songlistDetail_title}>
+        <View style={{ flexDirection: 'column', flexGrow: 1, flexShrink: 1, paddingLeft: 10 }} nativeID={NAV_SHEAR_NATIVE_IDS.songlistDetail_title}>
           <Text size={14} numberOfLines={ 1 }>{detailInfo.name}</Text>
           <View style={{ flexGrow: 0, flexShrink: 1 }}>
             <Text size={13} color={theme['c-font-label']} numberOfLines={ 4 }>{detailInfo.desc}</Text>
@@ -122,13 +121,6 @@ const styles = createStyle({
     flexDirection: 'column',
     flexWrap: 'nowrap',
     borderBottomWidth: BorderWidths.normal,
-  },
-  navBar: {
-    flexDirection: 'row',
-    flexGrow: 0,
-    flexShrink: 0,
-    alignItems: 'center',
-    height: scaleSizeH(36),
   },
   backBtn: {
     width: scaleSizeH(36),

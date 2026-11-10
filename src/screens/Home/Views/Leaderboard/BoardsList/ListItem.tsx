@@ -41,7 +41,7 @@ export default ({ item, activeId, index, longPressIndex, onBoundChange, onShowMe
       key={item.id} onLongPress={setPosition}
       onPress={() => { onBoundChange(item) }}
     >
-      <Text style={styles.listName} size={14} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']}>
+      <Text style={styles.listName} size={14} numberOfLines={1} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']}>
         {/* 箭头用字符写在同一段文本里，基线与歌名一致，不会像图标字体那样下沉 */}
         {active ? <Text size={14} color={theme['c-primary-font']}>{'›  '}</Text> : null}
         {item.name}
@@ -63,6 +63,7 @@ const styles = createStyle({
   listName: {
     justifyContent: 'center',
     paddingLeft: 6,
+    flexShrink: 1,
     // backgroundColor: 'rgba(0,0,0,0.1)',
   },
 })

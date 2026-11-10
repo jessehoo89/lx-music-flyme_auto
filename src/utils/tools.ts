@@ -464,9 +464,21 @@ export interface RowInfo {
 export type RowInfoType = 'full' | 'medium'
 
 export const getRowInfo = (type: RowInfoType = 'full'): RowInfo => {
-  const win = windowSizeTools.getSize()
+  let win = windowSizeTools.getSize()
+  // windowSizeTools 的尺寸是异步写入的，启动早期还是 0，退回 Dimensions，
+  // 避免 0/0 得到 NaN 而误判成单列。
+  if (!win.width || !win.height) {
+    const window = Dimensions.get('window')
+    win = { width: Math.round(window.width), height: Math.round(window.height) }
+  }
   let isMultiRow = isHorizontalMode(win.width, win.height)
-  if (type == 'medium' && win.width / win.height < 1.8) isMultiRow = false
+  if (type == 'medium') {
+    // 车机 / 超宽屏固定单列。上游按 width/height 比例判断（阈值 1.8），
+    // 而车机面板比例会在 2560x1464(1.75) 与 5120x1600(3.2) 之间跳动，
+    // 导致「切到我的列表再切回来，两列变一列」；同时两列会把歌名挤到截断。
+    // 这里改成按可用宽度判定，与尺寸来自哪一路无关。
+    isMultiRow = win.width < 1600 && win.width / win.height >= 1.8
+  }
   // console.log('getRowInfo')
   return {
     rowNum: isMultiRow ? 2 : undefined,

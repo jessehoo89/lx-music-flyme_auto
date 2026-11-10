@@ -84,8 +84,11 @@ export default forwardRef<LeftBarType, LeftBarProps>(({ onChangeList }, ref) => 
 const styles = createStyle({
   container: {
     flexDirection: 'column',
-    width: '26%',
-    minWidth: 160,
+    // 车机面板宽 2560，「26%」会到 660px，比曲目名还占地方，
+    // 收窄到 17%（约 435px）并限宽，把宽度让给右侧曲目列。
+    width: '17%',
+    minWidth: 100,
+    maxWidth: 460,
     flexGrow: 0,
     flexShrink: 0,
     borderRightWidth: BorderWidths.normal,

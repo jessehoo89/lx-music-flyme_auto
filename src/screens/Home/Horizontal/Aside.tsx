@@ -102,7 +102,12 @@ const MenuItem = ({ id, icon, onPress }: {
       </TouchableOpacity>
 }
 
-export default memo(() => {
+export interface AsideProps {
+  // 传入后菜单点击交给外部处理（例如先退出子页面再切菜单），否则按主界面逻辑直接切换
+  onNavigate?: (id: InitState['navActiveId']) => void
+}
+
+export default memo(({ onNavigate }: AsideProps = {}) => {
   const theme = useTheme()
   // console.log('render drawer nav')
   const showBackBtn = useSettingValue('common.showBackBtn')
@@ -125,7 +130,8 @@ export default memo(() => {
     }
 
     global.app_event.changeMenuVisible(false)
-    setNavActiveId(id)
+    if (onNavigate) onNavigate(id)
+    else setNavActiveId(id)
   }
 
   return (
