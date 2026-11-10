@@ -82,13 +82,15 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 ## 当前状态（2026-11-10）
 
 - `./gradlew assembleRelease` **BUILD SUCCESSFUL**（Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1）。
-- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,891,607 B，
-  sha256 `93aae121c8ffd1b2…`（含「三项车机交互修复」「第二轮 UI 布局」「第三轮 UI 修复」）；
+- 产物 `dist/lx-music-flyme_auto-1.9.2-universal.apk`，28,891,934 B，
+  sha256 `934a1dbdadad3e05…`（含第一至第五轮全部改动）；
   包名 `cn.toside.music.mobile.flyme`，versionCode 79 / versionName 1.9.2，
   签名 `CN=Android Debug`（仓库自带 debug.keystore）。
+- `./node_modules/.bin/tsc --noEmit` 保持上游基线 11 处报错，本分支改动**零新增**。
 - **2026-11-09 实车验证通过**：首次播放不再被电池优化 / 通知权限弹窗阻塞、在线导入自定义源输入栏可见、
   媒体中心音源不再长时间停在「加载中」。
-- 第二、三轮 UI 改动只过了编译，**尚未实车确认**（车机离线：`adb connect 172.28.197.127:5555` 无响应）。
+- **2026-11-10 实车验证通过**：第一至第五轮 UI 改动逐项截图确认（搜索页排布、播放条高度、
+  歌单详情左边栏与返回键、排行榜单列与左栏宽度），关于页文案亦已在车上核对。
 
 ## 实机验证清单
 
@@ -152,3 +154,42 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
    左侧 `<` 调 `pop(commonState.componentIds.songlistDetail)`，与播放详情页返回按钮同一套写法。
 3. **播放详情标题主次不分**：歌名 `size` 14 → 16，歌手保持 12 号 `c-font-label` 灰、间距 8 → 12，
    与排行榜列表「歌名 + 灰色歌手」的层次对齐；竖屏 `PlayDetail/Vertical` 同步。
+
+## 车机 UI 修复（第四轮）
+
+1. **歌单详情返回键并进封面行**：第三轮补的 `navBar` 会让 `<` 独占一条，把封面和歌名整体推下去。
+   改为删掉 `navBar`，`Header` 用 `flexDirection: 'row'` + `alignItems: 'center'`，`<` 在最左、
+   与封面 / 歌单名 / 介绍同行居中。
+2. **歌单详情补左侧导航栏**：横屏时在 `SonglistDetail/index.tsx` 复用主界面的 `Home/Horizontal/Aside`，
+   `Aside` 增加可选 `onNavigate` 回调；点菜单时先 `pop(commonState.componentIds.songlistDetail)`
+   再 `setNavActiveId`，否则会停在详情页。
+3. **排行榜左栏收窄**：`26%` → `17%`，并加 460px 上限（2560 面板约 660px → 435px）。
+   榜单名 `numberOfLines={1}` + `ellipsizeMode`，不再换行撑高。
+4. **排行榜列数抖动**：`getRowInfo` 按 `width / height >= 1.8` 判定两列，而车机面板比例会在
+   2560×1464（1.75）与 5120×1600（3.2）之间摆，于是「切到我的列表再切回」就翻一次列数。
+   改为按绝对宽度判定：`medium` 类型下 `width < 1600 && ratio >= 1.8` 才两列，车机固定单列，
+   与尺寸来源无关。顺带修掉 `windowSizeTools` 未初始化时判成单列的问题。
+5. **热门搜索被压塌**：`HotSearch.tsx` 外层 `BlankView` 已是 `ScrollView`，内层又套一层
+   `ScrollView`，纵向嵌套无固定高度被压到只剩一行半。改回普通 `View`（`HistorySearch` 本来就是这么写的），
+   标签随内容完整展开。
+
+## 车机 UI 修复（第五轮）
+
+1. **搜索栏顶到最上方**：横屏导航到 `nav_search` 时 `Home/Horizontal/Header` 只保留 `statusBarHeight`、
+   不再画「搜索」标题行；原来在标题行的「歌曲 / 歌单」类型切换挪到 `Search/HeaderBar` 右侧。
+   `BlankView` 顺序改为历史搜索在前、热门搜索在后相邻排列。
+2. **搜索页整块被挤没（两次回归，根因不同）**——
+   - 第一次：给类型切换容器写 `alignSelf: 'stretch'`，父高 auto 时按「可用满高」解析，整条搜索栏吃掉全部高度。
+   - 第二次（真根因）：复用来的搜索类型选择器容器写死 `height: '100%'`。它在原来的固定高度头部里没问题，
+     挪进父高 auto 的搜索栏后，`100%` 被解析成整块可用高度 —— `uiautomator dump` 实测该行高
+     **852**，其中选择器 `[2302,0-2534,1313]`，而内容区总共才 1219，下面全部被挤到 0。
+   - 修法：给选择器加 `autoHeight` 开关（`flexGrow: 0 / flexShrink: 0`，按内容撑开）；
+     `HeaderBar.searchBar` 由 `minHeight: 38` 改成确定 `height: scaleSizeH(40)` + `flexGrow: 0`。
+3. **播放条被撑到 2 倍高**：`PlayerBar` 容器本已有 `height: '100%'`，再叠 `justifyContent: 'center'`
+   会按「可用满高」解析，把主列表挤扁。撤掉该组合。
+4. **播放条偏高**：专辑图 46 → 40、`paddingVertical` 5 → 2、`PlayInfo.maxHeight` 32 → 18，
+   收掉标题与进度条之间的空白；整条高度与专辑图基本相等（实测约 55px vs 54px）。
+
+> 通用结论：车机横排工具栏一律给**确定高度**（`height: scaleSizeH(n)` + `flexGrow: 0`）。
+> `height: '100%'` / `alignSelf: 'stretch'` / `justifyContent: 'center'` 写在父高 auto 的横排容器上，
+> 都会按「可用满高」解析。详见 `viking://resources/03-技术知识-wiki/RN车机横排工具栏必须定高.md`。

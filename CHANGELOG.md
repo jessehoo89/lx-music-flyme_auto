@@ -6,6 +6,67 @@ Project versioning adheres to [Semantic Versioning](http://semver.org/).
 Commit convention is based on [Conventional Commits](http://conventionalcommits.org).
 Change log format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+> 本文件同时记录上游 LX Music 移动版与**车机适配分支（flyme_auto）**的变更。
+> `[Car]` 开头的条目是本分支的改动，按时间倒序排在文件最前；其下为上游原版记录，未做改动。
+
+## [Car] 2026-11-10 — 车机 UI 第四、五轮（实车验证通过）
+
+### 新增
+
+- 歌单详情页横屏时补左侧图标导航栏，复用主界面同一套图标与选中态；点菜单会先退出详情页再切换到对应栏目，不会停在详情页。
+- 搜索页「歌曲 / 歌单」类型切换挪到搜索栏右侧（原先在标题行，标题行去掉后会丢）。
+
+### 修复
+
+- **歌单详情返回键独占一行**：`<` 与封面、歌单名、介绍合成一行，`<` 在最左并垂直居中；封面整体上移一条导航条高度。
+- **排行榜左栏过宽**：由 `26%` 收到 `17%`（2560 面板约 660px → 435px），并加 460px 上限；榜单名改为单行省略，不再换行撑高。字号调到大/更大时右侧歌名不再被截断。
+- **排行榜列数抖动**：切到「我的列表」再切回时曲目列表由两列变一列。上游按 `宽/高 ≥ 1.8` 判列数，而车机面板比例会在 2560×1464（1.75）与 5120×1600（3.2）之间摆动。改为按绝对宽度判定（≥1600 固定单列），与尺寸来源无关；顺带修掉 `windowSizeTools` 未初始化时判成单列的问题。
+- **热门搜索只露一行**：外层 `BlankView` 已是 `ScrollView`，内层又套了一层 `ScrollView`，纵向嵌套无固定高度被压塌。改回普通 `View`，标签随内容完整展开。
+- **搜索栏浮在页面中部、历史/热门搜索整块消失**：复用来的搜索类型选择器写死 `height: '100%'`，在父高 auto 的容器里被解析成整块可用高度（实测 1313px，内容区总共 1219px），把下面全部挤掉。改为按内容撑开（新增 `autoHeight` 开关），搜索栏本身由 `minHeight` 改为确定 `height: scaleSizeH(40)`。
+- **播放条被撑到 2 倍高、主列表被挤扁**：容器本已有 `height: '100%'`，再加 `justifyContent: 'center'` 会按「可用满高」解析。撤掉该组合。
+- **播放条偏高**：专辑图 46 → 40、`paddingVertical` 5 → 2、进度行上限 32 → 18，收掉标题与进度条之间的空白，整条高度与专辑图基本相等。
+- **搜索页头部**：横屏导航到搜索时只保留状态栏高度、不再画标题行，搜索栏顶到页面最上方；`BlankView` 改为历史搜索在前、热门搜索在后相邻排列。
+
+## [Car] 2026-11-10 — 车机 UI 第二、三轮
+
+### 修复
+
+- 设置菜单、排行榜左栏的选中符号 `>` 下沉到文字下方：IcoMoon 图标字形的基线与系统字体不同，`alignItems: 'center'` 只能居中盒子、不能居中字形。改为把 `›` 写进同一段 `Text`（嵌套 `Text` 仅改颜色），基线与文字天然一致。
+- 歌单详情页缺返回按钮，补 `pop(commonState.componentIds.songlistDetail)`。
+- 播放详情页标题主次不分：歌名 14 → 16，歌手保持 12 号灰色、间距 8 → 12。
+
+### 变更
+
+- 文字缩放上限提高后，多处沿用手机时代的固定高度/宽度导致换行与截断，统一改为随文字自适应：
+  - 设置菜单 `NavList` 图标加 `flexShrink: 0`、去掉 `listName` 的 `height: '100%'`。
+  - 歌名与歌手之间的空白行：`OnlineList/ListItem`、`Mylist/MusicList/ListItem`、`PlayDetail` 的 `itemInfo` / `titleContent` 由竖排改横排单行。
+  - 搜索页 `searchBar` 与输入框由固定 `height` 改 `minHeight`。
+  - 排行榜左栏删除不参与缩放的 `maxWidth: 180`。
+  - 字体大小预览 `preview.height` 改 `minHeight`。
+  - 设置页主内容区 `flex: 0` 改 `flex: 1` + `minWidth: 0`。
+
+## [Car] 2026-11-09 — 车机交互修复
+
+### 修复
+
+- 屏蔽「忽略电池优化」与「通知权限」提醒：车机常供电，且本版本不读其它 App 的 MediaSession，不需要通知使用权。这两个弹窗原先被 `handlePlay` 以 `await` 等待，会阻塞首次播放初始化，导致媒体中心长时间停在「加载中」。
+- 弹窗与输入框：`windowSoftInputMode` 由 `adjustResize` 改 `adjustPan`；`Dialog` 不再按键盘高度二次压缩；`Modal` 关闭硬件加速（透明层在超宽屏上会出现竖条纹撕裂）。修复首次打开「在线导入自定义源」时输入栏不可见。
+- 首次注册后在 0.8s / 2.5s 各补推一次状态与歌词，避免车机把音源缓存成「加载中」。
+- 歌词链路不再依赖「显示蓝牙歌词」/「显示完整蓝牙歌词」两个设置开关。
+
+## [Car] 2026-11-09 — 首个车机适配版（基于上游 v1.9.2）
+
+### 新增
+
+- 内置车机媒体中心接入，替代此前的「车机助手」APK：Android 层新增 `cn.toside.music.mobile.car` 包完成注册、数据上行、恢复回调与音源条目写回；新增 RN 原生模块 `FlymeMediaCenterModule`（`init` / `updateState` / `updateLyric` / `updateProgress`）与 `FlymeMediaCenterAction` 事件回传播放控制动作。数据不再绕行 MediaSession，延迟与状态抖动随之消除。
+- 车机大屏低密度设备的字号与图标缩放适配（`src/utils/pixelRatio.ts`）。
+- 关于页新增本分支说明与源码地址。
+
+### 变更
+
+- `applicationId` 改为 `cn.toside.music.mobile.flyme`，与官方版共存、互不影响。
+- 移除桌面歌词的入口、播放详情页开关与初始化逻辑；歌词数据通道保留。
+
 ## [1.9.2](https://github.com/lyswhut/lx-music-mobile/compare/v1.9.1...v1.9.2) - 2026-10-30
 
 ### 修复

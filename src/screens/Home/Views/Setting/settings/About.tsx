@@ -20,13 +20,13 @@ export default memo(() => {
   const theme = useTheme()
   const t = useI18n()
   const openHomePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile#readme')
+    void openUrl('https://github.com/jessehoo89/lx-music-flyme_auto#readme')
   }
   const openIssuePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile/issues?q=is%3Aissue+')
+    void openUrl('https://github.com/jessehoo89/lx-music-flyme_auto/issues')
   }
-  const openGHReleasePage = () => {
-    void openUrl('https://github.com/lyswhut/lx-music-mobile/releases')
+  const openDocPage = () => {
+    void openUrl('https://github.com/jessehoo89/lx-music-flyme_auto/blob/main/FLYME.md')
   }
   const openFAQPage = () => {
     void openUrl('https://lyswhut.github.io/lx-music-doc/mobile/faq')
@@ -63,26 +63,28 @@ export default memo(() => {
   return (
     <Section title={t('setting_about')}>
       <View style={styles.part}>
-        <Text style={styles.text} >本软件完全免费，代码已开源。开源地址：</Text>
+        <Text style={styles.text} >本软件完全免费，代码已开源。本车机版源码地址：</Text>
         <TouchableOpacity onPress={openHomePage}>
-          <Text style={textLinkStyle}>https://github.com/lyswhut/lx-music-mobile</Text>
+          <Text style={textLinkStyle}>https://github.com/jessehoo89/lx-music-flyme_auto</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}>最新版下载地址：</Text>
-        <TouchableOpacity onPress={openGHReleasePage}>
-          <Text style={textLinkStyle}>GitHub Releases</Text>
+        <Text style={styles.text}>车机适配说明与更新记录：</Text>
+        <TouchableOpacity onPress={openDocPage}>
+          <Text style={textLinkStyle}>FLYME.md</Text>
         </TouchableOpacity>
+        <Text style={styles.text}>（上游原版说明见仓库 README）</Text>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text} >软件的常见问题可转至：</Text>
+        <Text style={styles.text} >上游移动版的常见问题可转至：</Text>
         <TouchableOpacity onPress={openFAQPage}>
           <Text style={textLinkStyle}>移动版常见问题</Text>
         </TouchableOpacity>
+        <Text style={styles.text}>（车机相关见上方 FLYME.md）</Text>
       </View>
       <View style={styles.part}>
         <Text style={styles.text}><Text style={styles.boldText}>本软件没有客服</Text>，但我们整理了一些常见的使用问题。<Text style={styles.boldText} >仔细、仔细、仔细</Text>地阅读常见问题后，</Text>
-        <Text style={styles.text}>仍有问题可到 GitHub </Text>
+        <Text style={styles.text}>仍有问题可到本仓库 GitHub </Text>
         <TouchableOpacity onPress={openIssuePage}>
           <Text style={textLinkStyle}>提交 Issue</Text>
         </TouchableOpacity>
@@ -92,16 +94,16 @@ export default memo(() => {
         <Text style={styles.text}>由于软件开发的初衷仅是为了对新技术的学习与研究，因此软件直至停止维护都将会一直保持纯净。</Text>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}>目前本项目的原始发布地址<Text style={styles.boldText}>只有 GitHub</Text>，其他渠道均为第三方转载发布，可信度请自行鉴别。</Text>
+        <Text style={styles.text}>本车机版的发布地址<Text style={styles.boldText}>只有 GitHub</Text>，其他渠道均为第三方转载发布，可信度请自行鉴别。</Text>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}><Text style={styles.boldText}>本项目没有微信公众号之类的所谓「官方账号」，也未在小米、华为、vivo 等应用商店发布同名应用，谨防被骗！</Text></Text>
+        <Text style={styles.text}><Text style={styles.boldText}>本车机版没有微信公众号之类的所谓「官方账号」，也未在任何应用商店发布，仅通过上面的源码仓库分发；其它同名应用均与本车机版无关，谨防被骗！</Text></Text>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}>若你使用过程中遇到<Text style={styles.boldText}>广告</Text>或者<Text style={styles.boldText}>引流</Text>（如需要加群、关注公众号之类才能使用或者升级）的信息，则表明你当前运行的软件是「第三方修改版」。</Text>
+        <Text style={styles.text}>本车机版不含任何<Text style={styles.boldText}>广告</Text>与<Text style={styles.boldText}>引流</Text>。若你遇到需要加群、关注公众号之类才能使用或者升级的信息，则说明这个安装包已被他人二次修改，请勿使用。</Text>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}>若在升级新版本时提示「<Text style={styles.boldText}>签名不一致</Text>」，则表明你手机上的旧版本或者将要安装的新版本中<Text style={styles.boldText}>有一方</Text>是「<Text style={styles.boldText}>第三方修改版</Text>」。</Text>
+        <Text style={styles.text}>本车机版使用独立包名 <Text style={styles.boldText}>cn.toside.music.mobile.flyme</Text> 与自建签名，可与上游官方版共存、互不影响。若升级时提示「<Text style={styles.boldText}>签名不一致</Text>」，说明待装的包并非来自本仓库，请勿安装。</Text>
       </View>
       <View style={styles.part}>
         <Text style={styles.text}>你已签署本软件的</Text>
@@ -112,7 +114,7 @@ export default memo(() => {
       </View>
       <View style={styles.part}>
         <Text style={styles.boldText}>LX Music 车机独立适配版（flyme_auto）</Text>
-        <Text style={styles.text}>：基于上游 LX Music 移动版 {process.versions.app} 定制，内置车机媒体中心接入能力，不再需要额外的车机助手；针对超宽车机屏幕调整了字号与布局，并移除了无法使用的桌面歌词。</Text>
+        <Text style={styles.text}>基于上游 LX Music 移动版 {process.versions.app} 定制，内置车机媒体中心接入能力，不再需要额外的车机助手；针对超宽车机屏幕调整了字号与布局，并移除了无法使用的桌面歌词。</Text>
       </View>
       <View style={styles.part}>
         <Text style={styles.text}>本项目沿用上游 Apache-2.0 许可，源码地址：</Text>
@@ -121,8 +123,10 @@ export default memo(() => {
         </TouchableOpacity>
       </View>
       <View style={styles.part}>
-        <Text style={styles.text}>By: </Text>
+        <Text style={styles.text}>上游作者：</Text>
         <Text style={styles.text}>落雪无痕</Text>
+        <Text style={styles.text}>　车机适配：</Text>
+        <Text style={styles.text}>jessehoo89</Text>
       </View>
     </Section>
   )

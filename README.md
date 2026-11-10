@@ -1,70 +1,70 @@
-<p align="center"><a href="https://github.com/lyswhut/lx-music-mobile"><img width="200" src="https://github.com/lyswhut/lx-music-mobile/blob/master/doc/images/icon.png" alt="lx-music logo"></a></p>
+<p align="center"><img width="120" src="https://github.com/lyswhut/lx-music-mobile/raw/master/doc/images/icon.png" alt="LX Music"></p>
 
-<h1 align="center">LX Music 移动版</h1>
+<h1 align="center">LX Music 车机版（flyme_auto）</h1>
 
-<p align="center">
-  <a href="https://github.com/lyswhut/lx-music-mobile/releases"><img src="https://img.shields.io/github/release/lyswhut/lx-music-mobile" alt="Release version"></a>
-  <a href="https://github.com/lyswhut/lx-music-mobile/actions/workflows/release.yml"><img src="https://github.com/lyswhut/lx-music-mobile/workflows/Build/badge.svg" alt="Build status"></a>
-  <a href="https://github.com/lyswhut/lx-music-mobile/actions/workflows/beta-pack.yml"><img src="https://github.com/lyswhut/lx-music-mobile/workflows/Build%20Beta/badge.svg" alt="Build status"></a>
-  <a href="https://github.com/facebook/react-native"><img src="https://img.shields.io/github/package-json/dependency-version/lyswhut/lx-music-mobile/react-native/master" alt="React native version"></a>
-  <!-- <a href="https://github.com/lyswhut/lx-music-mobile/releases"><img src="https://img.shields.io/github/downloads/lyswhut/lx-music-mobile/latest/total" alt="Downloads"></a> -->
-  <a href="https://github.com/lyswhut/lx-music-mobile/tree/dev"><img src="https://img.shields.io/github/package-json/v/lyswhut/lx-music-mobile/dev" alt="Dev branch version"></a>
-  <!-- <a href="https://github.com/lyswhut/lx-music-mobile/blob/master/LICENSE"><img src="https://img.shields.io/github/license/lyswhut/lx-music-mobile" alt="License"></a> -->
-</p>
+<p align="center">基于上游 LX Music 移动版 v1.9.2 的 Flyme Auto 车机适配分支</p>
 
-<p align="center">一个基于 React Native 开发的音乐软件</p>
+> **这不是 LX Music 官方仓库。** 上游项目是 [lyswhut/lx-music-mobile](https://github.com/lyswhut/lx-music-mobile)。
+> 本仓库只针对特定车机做适配，不向上游提交 PR，也不会被上游合并。
 
-## 说明
+## 为什么要单独做一个分支
 
-所用技术栈：
+上游移动版在车机上能装能放，但**接不进车机自己的媒体中心**：方向盘按键、手扶箱播放键、HUD 上的
+歌词与封面、音源列表里的「正在播放」都不认它。此前的做法是另装一个「车机助手」APK 去订阅它的
+MediaSession 再转发给媒体中心——数据要绕 500ms 防抖、Bridge 往返与图片解码，封面和播放状态有明显延迟，
+暂停与切歌也常常对不上。
 
-- React Native
-- Redux
+这个分支把接入层直接做进 LX Music 本身，**不再需要额外的车机助手 APK**。
 
-已支持的平台：
+## 主要改动
 
-- Android 5 及以上
+| 方面 | 说明 |
+| --- | --- |
+| 媒体中心接入 | Android 层新增 `cn.toside.music.mobile.car` 包，用公开 API 完成注册、数据上行、恢复回调与音源条目写回；RN 层经 `FlymeMediaCenterModule` 直接读 `playerState` 的一手数据，不再绕行 MediaSession |
+| 车机 UI 适配 | 5120×1600 / 2560×1600 超宽屏下的字号、图标、列表列数与栏目宽度；横屏补左侧图标导航栏，歌单详情页同步 |
+| 桌面歌词 | 移除入口与初始化逻辑（车机上无法使用）。歌词**数据通道**保留，媒体中心整篇滚动与 HUD 单行歌词都不受影响 |
+| 包名 | `cn.toside.music.mobile.flyme`，可与官方版共存、随时回退 |
 
-***注：目前没有计划支持 iOS 和 HarmonyOS NEXT**。*<br>
-*桌面版项目地址：<https://github.com/lyswhut/lx-music-desktop>*<br>
-*LX Music 项目发展调整与新项目计划：https://github.com/lyswhut/lx-music-desktop/issues/1912*
+逐条实现细节、踩过的坑与实机验证清单都记在 **[FLYME.md](FLYME.md)**。
 
-软件变化请查看[更新日志](https://github.com/lyswhut/lx-music-mobile/blob/master/CHANGELOG.md)。
+## 安装
 
-软件下载请查看 [GitHub Releases](https://github.com/lyswhut/lx-music-mobile/releases)。
+```bash
+adb install --user <用户ID> -r lx-music-mobile-v1.9.2-universal.apk
+```
 
-使用常见问题请参阅[移动版常见问题](https://lyswhut.github.io/lx-music-doc/mobile/faq)。
+- 换包名后**需要在车机媒体中心的音源列表里重新选择一次本应用**，否则音源条目仍按旧包名索引。
+- 与官方版数据目录独立，首次使用需重新导入歌单。
+- 车机多用户环境下必须显式指定 `--user`（本项目实测在 `user 12`）。装到不存在的用户空间会
+  「命令成功但桌面上看不到」。
 
-目前本项目的原始发布地址只有 [**GitHub**](https://github.com/lyswhut/lx-music-mobile/releases)，其他渠道均为第三方转载发布，与本项目无关！
+## 文档
 
-为了提高使用门槛，本软件内的默认设置、UI 操作不以新手友好为目标，所以使用前建议先根据你的喜好浏览调整一遍软件设置，阅读一遍[音乐播放列表机制](https://lyswhut.github.io/lx-music-doc/mobile/faq/playlist)。
+- **[FLYME.md](FLYME.md)** — 适配说明、主要改动、编译步骤、实机验证清单
+- **[CHANGELOG.md](CHANGELOG.md)** — 车机版变更记录见文件顶部的 `[Car]` 章节，其后是上游原版记录
+- **[FAQ.md](FAQ.md)** — 上游移动版常见问题，大部分仍然适用
 
-### 数据同步服务
+## 编译
 
-从 v1.0.0 起，我们发布了一个独立的[数据同步服务](https://github.com/lyswhut/lx-music-sync-server#readme)。如果你有服务器，可以将其部署到服务器上作为私人多端同步服务使用，详情看该项目说明。
+需要 Node.js 18+、JDK 17、Android SDK（`compileSdk 36` / `build-tools 35.0.0` /
+`ndk 26.1.10909125` / `cmake 3.22.1`）。完整环境说明见 [FLYME.md](FLYME.md#编译)。
 
-## 贡献代码
+```bash
+npm install --no-audit --no-fund
+cd android
+echo "sdk.dir=/path/to/android/sdk" > local.properties   # 不要提交
+./gradlew assembleRelease
+```
 
-本项目欢迎 PR，但为了 PR 能顺利合并，需要注意以下几点：
+产物在 `android/app/build/outputs/apk/release/`。`assembleRelease` 会自动调用 Metro 打包 JS，
+不需要预先手工执行 `react-native bundle`。
 
-- 对于添加新功能的 PR，建议在提交 PR 前先创建 Issue 进行说明，以确认该功能是否确实需要；
-- 对于修复 bug 的 PR，请提供修复前后的说明及重现方式；
-- 对于其他类型的 PR，则适当附上说明。
+## 许可与致谢
 
-贡献代码步骤：
+本仓库沿用上游的 **Apache License 2.0**（详见 [LICENSE](LICENSE)），新增的适配代码同样以 Apache-2.0 提供。
+上游作者：**落雪无痕**；本分支的车机适配由 **jessehoo89** 维护。
 
-1. 参照[源码使用方法](https://lyswhut.github.io/lx-music-doc/mobile/use-source-code)设置开发环境；
-2. 克隆本仓库代码并切换至 `dev` 分支进行开发；
-3. 提交 PR 至 `dev` 分支。
-
-<!--
-## 用户界面
-
-<p><img width="100%" src="https://github.com/lyswhut/lx-music-mobile/blob/master/doc/images/app.png" alt="lx-music mobile UI"></p> -->
-
-## 项目协议
-
-本项目基于 [Apache License 2.0](https://github.com/lyswhut/lx-music-mobile/blob/master/LICENSE) 许可证发行，以下协议是对于 Apache License 2.0 的补充，如有冲突，以以下协议为准。
+上游的附加协议同样适用于本分支，全文如下（原文未改动）：
 
 ---
 
@@ -111,7 +111,3 @@
 ### 九、接受协议
 
 9.1 若你使用了本项目，即代表你接受本协议。
-
----
-
-若对此有疑问请 mail to: lyswhut+qq.com (请将 `+` 替换成 `@`)
