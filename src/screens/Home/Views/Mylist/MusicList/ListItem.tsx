@@ -53,7 +53,7 @@ export default memo(({ item, index, activeIndex, onPress, onShowMenu, onLongPres
         }
         <View style={styles.itemInfo}>
           {/* <View style={styles.listItemTitle}> */}
-          <Text color={active ? theme['c-primary-font'] : theme['c-font']} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.listItemTitle} color={active ? theme['c-primary-font'] : theme['c-font']} numberOfLines={1}>{item.name}</Text>
           {/* </View> */}
           <View style={styles.listItemSingle}>
             <Badge>{item.source.toUpperCase()}</Badge>
@@ -113,18 +113,23 @@ const styles = createStyle({
     paddingRight: 3,
   },
   itemInfo: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
     flexGrow: 1,
     flexShrink: 1,
     // paddingTop: 10,
     // paddingBottom: 10,
     paddingRight: 2,
   },
-  // listItemTitle: {
-  //   flexGrow: 0,
-  //   flexShrink: 1,
-  // },
+  listItemTitle: {
+    flexGrow: 0,
+    flexShrink: 1,
+    marginRight: 8,
+  },
   listItemSingle: {
-    paddingTop: 3,
+    flexShrink: 1,
+    alignItems: 'center',
     flexDirection: 'row',
     // alignItems: 'flex-end',
   },

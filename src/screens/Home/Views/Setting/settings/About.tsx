@@ -111,6 +111,16 @@ export default memo(() => {
         <Text style={styles.text}>。</Text>
       </View>
       <View style={styles.part}>
+        <Text style={styles.boldText}>LX Music 车机独立适配版（flyme_auto）</Text>
+        <Text style={styles.text}>：基于上游 LX Music 移动版 {process.versions.app} 定制，内置车机媒体中心接入能力，不再需要额外的车机助手；针对超宽车机屏幕调整了字号与布局，并移除了无法使用的桌面歌词。</Text>
+      </View>
+      <View style={styles.part}>
+        <Text style={styles.text}>本项目沿用上游 Apache-2.0 许可，源码地址：</Text>
+        <TouchableOpacity onPress={() => { void openUrl('https://github.com/jessehoo89/lx-music-flyme_auto') }}>
+          <Text style={textLinkStyle}>https://github.com/jessehoo89/lx-music-flyme_auto</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.part}>
         <Text style={styles.text}>By: </Text>
         <Text style={styles.text}>落雪无痕</Text>
       </View>

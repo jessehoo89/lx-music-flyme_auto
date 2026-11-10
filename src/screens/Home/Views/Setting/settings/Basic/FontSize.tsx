@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // paddingTop: 3,
     paddingBottom: 10,
-    height: 45,
+    minHeight: 45,
   },
   list: {
     flexDirection: 'row',

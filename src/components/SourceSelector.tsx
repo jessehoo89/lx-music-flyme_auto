@@ -60,7 +60,7 @@ const Component = <S extends Sources>({ fontSize = 15, center, onSourceChange }:
       activeId={source}
     >
       <View style={styles.sourceMenu}>
-        <Text style={{ textAlign: center ? 'center' : 'left' }} numberOfLines={1} size={fontSize}>{t(`source_${sourceNameType}_${source}`)}</Text>
+        <Text style={{ textAlign: center ? 'center' : 'left' }} size={fontSize}>{t(`source_${sourceNameType}_${source}`)}</Text>
       </View>
     </DorpDownMenu>
   )
@@ -71,7 +71,6 @@ export default forwardRef(Component) as <S extends Sources>(p: SourceSelectorPro
 
 const styles = createStyle({
   sourceMenu: {
-    height: '100%',
     justifyContent: 'center',
     // paddingTop: 12,
     // paddingBottom: 12,

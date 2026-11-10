@@ -22,7 +22,8 @@ const styles = createStyle({
     paddingRight: 15,
     paddingTop: 15,
     paddingBottom: 15,
-    flex: 0,
+    flex: 1,
+    minWidth: 0,
   },
 })
 

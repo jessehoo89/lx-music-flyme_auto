@@ -47,7 +47,7 @@ export default ({ item, activeId, index, longPressIndex, onBoundChange, onShowMe
           ? <Icon style={styles.listActiveIcon} name="chevron-right" size={12} color={theme['c-primary-font']} />
           : null
       }
-      <Text style={styles.listName} size={14} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']} numberOfLines={1}>{item.name}</Text>
+      <Text style={styles.listName} size={14} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']}>{item.name}</Text>
     </Button>
   )
 }
@@ -59,16 +59,17 @@ const styles = createStyle({
     paddingTop: 10,
     paddingBottom: 10,
     flexDirection: 'row',
+    flexWrap: 'nowrap',
     alignItems: 'center',
   },
   listActiveIcon: {
     // width: 18,
+    flexShrink: 0,
     marginLeft: 3,
     // paddingRight: 5,
     textAlign: 'center',
   },
   listName: {
-    height: '100%',
     justifyContent: 'center',
     paddingLeft: 6,
     // backgroundColor: 'rgba(0,0,0,0.1)',

@@ -79,14 +79,15 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 （storePassword / keyPassword `android`，alias `androiddebugkey`），便于与官方版共存并
 持续覆盖升级。正式分发时请用 `-PMYAPP_UPLOAD_STORE_FILE=...` 等参数提供自己的签名。
 
-## 当前状态（2026-11-09）
+## 当前状态（2026-11-10）
 
-- Metro JS bundle 独立打包通过；`./gradlew assembleRelease` **BUILD SUCCESSFUL**
-  （Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1，635 个任务）。
-- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,890,927 B，
-  sha256 `96bf53c864212711…`（含「歌词链路脱离蓝牙开关」改动）；包名 `cn.toside.music.mobile.flyme`，
+- `./gradlew assembleRelease` **BUILD SUCCESSFUL**（Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1）。
+- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,891,154 B，
+  sha256 `266504b89e43acc8…`（含「三项车机交互修复」与「第二轮 UI 布局修复」）；包名 `cn.toside.music.mobile.flyme`，
   versionCode 79 / versionName 1.9.2，签名 `CN=Android Debug`（仓库自带 debug.keystore）。
-- **实车调试尚未进行**（当时车机不在线），上线后按下面清单验证。
+- **2026-11-09 实车验证通过**：首次播放不再被电池优化 / 通知权限弹窗阻塞、在线导入自定义源输入栏可见、
+  媒体中心音源不再长时间停在「加载中」。第二轮 UI 布局改动只过了编译，尚未实车确认。
+- 车机当前离线（`adb connect 172.28.197.127:5555` 无响应），上线后按下面清单继续验证。
 
 ## 实机验证清单
 
@@ -127,3 +128,15 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
   键盘高度二次压缩弹窗；`Modal` 关闭硬件加速（透明层在超宽屏上会出现竖条纹撕裂）。
   修复首次打开「在线导入自定义源」时输入栏不可见的问题。
 - 首次注册后在 0.8s / 2.5s 各补推一次状态与歌词，避免车机把音源缓存成「加载中」。
+
+## 车机 UI 布局修复（第二轮）
+
+文字缩放上限提高后，多处沿用手机时代的固定高度 / 宽度导致换行与截断。本轮按「让布局随文字自适应」统一处理：
+
+- **设置菜单选中符号**：`NavList` 的图标加 `flexShrink: 0`、去掉 `listName` 的 `height: '100%'`、行高改由 `getTextSize(16)` 共同决定，保证 `>` 与选项文本同行。
+- **歌名 / 歌手之间的空白行**：`OnlineList/ListItem`（搜索结果、排行榜）、`Mylist/MusicList/ListItem`、`PlayDetail` 两个 Header 的 `itemInfo` / `titleContent` 由竖排改成 `flexDirection: 'row'` + `flexWrap: 'nowrap'`，车机宽屏下一行显示，彻底消除两行间距；歌名 `flexShrink: 1` 避免挤压。
+- **搜索页头部**：`searchBar` 固定 `height: 38` 改 `minHeight` 并居中，输入框 `height: 32` 改 `minHeight`，源标签与搜索选项不再被压到不同行。
+- **排行榜左栏**：删除不参与缩放的 `maxWidth: 180`（这是宽度被顶死的直接原因），`minWidth` 提到 160（会随 `scaleSizeW` 放大），榜单名去掉 `numberOfLines={1}`；字号继续调大也不会截断。
+- **字体大小预览**：`preview.height: 45` 改 `minHeight`，预览文字按字号自然撑高。
+- **关于页**：新增本项目介绍（车机独立适配版、内置媒体中心接入、Apache-2.0、基于上游 v1.9.2）与源码地址，版本号读 `process.versions.app`。
+- 设置页主内容区 `flex: 0` 改 `flex: 1` + `minWidth: 0`，避免大字号下右侧内容被挤窄。

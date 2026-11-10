@@ -57,6 +57,7 @@ const styles = createStyle({
     // backgroundColor: 'rgba(0,0,0,0.1)',
   },
   button: {
+    flexShrink: 0,
     // height: 38,
     // lineHeight: 38,
     justifyContent: 'center',

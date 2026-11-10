@@ -63,7 +63,7 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
       <TouchableOpacity style={styles.listItemLeft} onPress={() => { onPress(item, index) }} onLongPress={() => { onLongPress(item, index) }}>
         <Text style={styles.sn} size={13} color={theme['c-300']}>{index + 1}</Text>
         <View style={styles.itemInfo}>
-          <Text numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.listItemTitle} numberOfLines={1}>{item.name}</Text>
           <View style={styles.listItemSingle}>
             { tagInfo.type ? <Badge type={tagInfo.type}>{tagInfo.text}</Badge> : null }
             { showSource ? <Badge type="tertiary">{item.source}</Badge> : null }
@@ -116,20 +116,22 @@ const styles = createStyle({
     paddingRight: 3,
   },
   itemInfo: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
     flexGrow: 1,
     flexShrink: 1,
     paddingRight: 2,
     // paddingTop: 10,
     // paddingBottom: 10,
   },
-  // listItemTitle: {
-  //   // backgroundColor: 'rgba(0,0,0,0.2)',
-  //   flexGrow: 0,
-  //   flexShrink: 1,
-  //   // fontSize: 15,
-  // },
+  listItemTitle: {
+    flexGrow: 0,
+    flexShrink: 1,
+    marginRight: 8,
+  },
   listItemSingle: {
-    paddingTop: 2,
+    flexShrink: 1,
     flexDirection: 'row',
     alignItems: 'center',
     // alignItems: 'flex-end',

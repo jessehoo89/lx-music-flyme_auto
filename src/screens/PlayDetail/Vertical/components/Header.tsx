@@ -26,7 +26,7 @@ const Title = () => {
   return (
     <View style={styles.titleContent}>
       <Text numberOfLines={1} style={styles.title}>{musicInfo.name}</Text>
-      <Text numberOfLines={1} style={styles.title} size={12} color={theme['c-font-label']}>{musicInfo.singer}</Text>
+      <Text numberOfLines={1} style={styles.titleSub} size={12} color={theme['c-font-label']}>{musicInfo.singer}</Text>
     </View>
   )
 }
@@ -65,13 +65,19 @@ const styles = StyleSheet.create({
   },
   titleContent: {
     flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
     paddingHorizontal: 5,
     // alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    // flex: 1,
-    // textAlign: 'center',
+    flexShrink: 1,
+  },
+  titleSub: {
+    flexShrink: 1,
+    marginLeft: 8,
   },
   icon: {
     paddingLeft: 4,

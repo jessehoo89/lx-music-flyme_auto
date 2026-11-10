@@ -85,14 +85,13 @@ const styles = createStyle({
   container: {
     flexDirection: 'column',
     width: '26%',
-    maxWidth: 180,
-    minWidth: 110,
+    minWidth: 160,
     flexGrow: 0,
     flexShrink: 0,
     borderRightWidth: BorderWidths.normal,
   },
   selector: {
-    height: 38,
+    minHeight: 38,
   },
 })
 

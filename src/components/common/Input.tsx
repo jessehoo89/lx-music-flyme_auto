@@ -21,7 +21,7 @@ const styles = createStyle({
     borderRadius: 2,
     paddingTop: 0,
     paddingBottom: 0,
-    height: 32,
+    minHeight: 32,
     paddingLeft: 5,
     paddingRight: 0,
     flexGrow: 1,

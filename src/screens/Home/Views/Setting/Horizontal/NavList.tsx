@@ -6,13 +6,14 @@ import { Icon } from '@/components/common/Icon'
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
 import Text from '@/components/common/Text'
-import { scaleSizeH } from '@/utils/pixelRatio'
+import { scaleSizeH, getTextSize } from '@/utils/pixelRatio'
 import { SETTING_SCREENS, type SettingScreenIds } from '../Main'
 import { useI18n } from '@/lang'
 
 type FlatListType = FlatListProps<SettingScreenIds>
 
-const ITEM_HEIGHT = scaleSizeH(40)
+// 车机大字号下由文字高度共同决定行高，避免固定行高把选中符号挤到下一行
+const ITEM_HEIGHT = Math.max(scaleSizeH(40), getTextSize(16) * 2)
 
 const ListItem = memo(({ id, activeId, onPress }: {
   onPress: (item: SettingScreenIds) => void
@@ -104,6 +105,7 @@ const styles = createStyle({
   listItem: {
     height: 'auto',
     flexDirection: 'row',
+    flexWrap: 'nowrap',
     alignItems: 'center',
     paddingRight: 10,
     paddingLeft: 10,
@@ -111,12 +113,13 @@ const styles = createStyle({
   },
   listActiveIcon: {
     // width: 18,
+    flexShrink: 0,
     marginLeft: 3,
     // paddingRight: 5,
     textAlign: 'center',
   },
   listName: {
-    height: '100%',
+    flexWrap: 'nowrap',
     // height: 46,
     // paddingTop: 12,
     // paddingBottom: 12,
