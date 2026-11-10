@@ -97,7 +97,8 @@ const styles = createStyle({
 const stylesRaw = StyleSheet.create({
   container: {
     // height: 16,
-    maxHeight: scaleSizeH(32),
+    // 上游 32，多出来的空白让进度条离标题很远，收到 18
+    maxHeight: scaleSizeH(18),
     flexGrow: 1,
     flexShrink: 0,
     paddingTop: PADDING_TOP,

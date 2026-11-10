@@ -30,17 +30,20 @@ const LeftHeader = () => {
   const id = useNavActiveId()
   const t = useI18n()
   const statusBarHeight = useStatusbarHeight()
+  // 搜索页把搜索栏顶到最上面：不再画标题行，整条头部只留状态栏高度，
+  // 「歌曲/歌单」切换挪到搜索栏右侧（见 Search/HeaderBar）。
+  const isSearch = id == 'nav_search'
 
   return (
     <View style={{
       ...styles.container,
-      height: scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
+      height: isSearch ? statusBarHeight : scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
       paddingTop: statusBarHeight,
     }}>
-      <View style={styles.left}>
+      {isSearch ? null : <View style={styles.left}>
         <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
-      </View>
-      {headerComponents[id] ?? null}
+      </View>}
+      {isSearch ? null : (headerComponents[id] ?? null)}
 
       {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
         <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />
@@ -60,17 +63,18 @@ const RightHeader = () => {
   const t = useI18n()
   const id = useNavActiveId()
   const statusBarHeight = useStatusbarHeight()
+  const isSearch = id == 'nav_search'
 
   return (
     <View style={{
       ...styles.container,
-      height: scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
+      height: isSearch ? statusBarHeight : scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
       paddingTop: statusBarHeight,
     }}>
-      <View style={styles.left}>
+      {isSearch ? null : <View style={styles.left}>
         <Text style={styles.rightTitle} size={18}>{t(id)}</Text>
-      </View>
-      {headerComponents[id] ?? null}
+      </View>}
+      {isSearch ? null : (headerComponents[id] ?? null)}
       {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
         <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />
       </TouchableOpacity> */}

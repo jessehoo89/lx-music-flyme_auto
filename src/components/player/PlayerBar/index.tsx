@@ -48,7 +48,8 @@ const styles = createStyle({
     // marginTop: -progressContentPadding,
     // backgroundColor: 'rgba(0, 0, 0, .1)',
     // borderTopWidth: BorderWidths.normal2,
-    paddingVertical: 5,
+    // 上下内边距压小，整条高度≈专辑图高度（46 设计稿单位）
+    paddingVertical: 2,
     paddingLeft: 5,
     // backgroundColor: AppColors.primary,
     // backgroundColor: 'red',

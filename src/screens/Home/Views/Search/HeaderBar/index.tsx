@@ -13,6 +13,8 @@ import { createStyle } from '@/utils/tools'
 import { useTheme } from '@/store/theme/hook'
 import { type Source as MusicSource } from '@/store/search/music/state'
 import { type Source as SonglistSource } from '@/store/search/songlist/state'
+import SearchTypeSelector from '../SearchTypeSelector'
+import { useHorizontalMode } from '@/utils/hooks'
 
 type Sources = Readonly<Array<MusicSource | SonglistSource>>
 type SourceSelectorProps = _SourceSelectorProps<Sources>
@@ -37,6 +39,8 @@ export default forwardRef<HeaderBarType, HeaderBarProps>(({ onSourceChange, onTi
   const sourceSelectorRef = useRef<SourceSelectorType>(null)
   const searchInputRef = useRef<SearchInputType>(null)
   const theme = useTheme()
+  // 横屏（车机/平板）头部不再画标题行，类型切换放在搜索栏右侧
+  const isHorizontalMode = useHorizontalMode()
 
   useImperativeHandle(ref, () => ({
     setSourceList(list, source) {
@@ -63,6 +67,7 @@ export default forwardRef<HeaderBarType, HeaderBarProps>(({ onSourceChange, onTi
         onBlur={onHideTipList}
         onTouchStart={onShowTipList}
       />
+      {isHorizontalMode ? <View style={styles.typeSelector}><SearchTypeSelector /></View> : null}
     </View>
   )
 })
@@ -79,5 +84,11 @@ const styles = createStyle({
   },
   selector: {
     flexShrink: 0,
+  },
+  typeSelector: {
+    flexGrow: 0,
+    flexShrink: 0,
+    paddingLeft: 5,
+    justifyContent: 'center',
   },
 })
