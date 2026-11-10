@@ -15,6 +15,7 @@ import { type Source as MusicSource } from '@/store/search/music/state'
 import { type Source as SonglistSource } from '@/store/search/songlist/state'
 import SearchTypeSelector from '../SearchTypeSelector'
 import { useHorizontalMode } from '@/utils/hooks'
+import { scaleSizeH } from '@/utils/pixelRatio'
 
 type Sources = Readonly<Array<MusicSource | SonglistSource>>
 type SourceSelectorProps = _SourceSelectorProps<Sources>
@@ -67,7 +68,7 @@ export default forwardRef<HeaderBarType, HeaderBarProps>(({ onSourceChange, onTi
         onBlur={onHideTipList}
         onTouchStart={onShowTipList}
       />
-      {isHorizontalMode ? <View style={styles.typeSelector}><SearchTypeSelector /></View> : null}
+      {isHorizontalMode ? <View style={styles.typeSelector}><SearchTypeSelector autoHeight /></View> : null}
     </View>
   )
 })
@@ -77,7 +78,11 @@ const styles = createStyle({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'center',
-    minHeight: 38,
+    // 必须是确定高度：行内任何子项一旦按「可用高度」解析（100% / flexGrow），
+    // 整行就会吃满内容区（实测被撑到 852），下面的历史/热门搜索被挤成一条缝。
+    height: scaleSizeH(40),
+    flexGrow: 0,
+    flexShrink: 0,
     zIndex: 2,
     paddingRight: 10,
     borderBottomWidth: BorderWidths.normal,

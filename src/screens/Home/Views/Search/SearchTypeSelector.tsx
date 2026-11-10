@@ -14,7 +14,7 @@ const SEARCH_TYPE_LIST = [
   'songlist',
 ] as const
 
-export default () => {
+export default ({ autoHeight = false }: { autoHeight?: boolean } = {}) => {
   const t = useI18n()
   const theme = useTheme()
   const [type, setType] = useState<SearchType>('music')
@@ -35,7 +35,7 @@ export default () => {
   }
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps={'always'} horizontal={true}>
+    <ScrollView style={autoHeight ? styles.containerAuto : styles.container} keyboardShouldPersistTaps={'always'} horizontal={true}>
       {
         list.map(t => (
           <TouchableOpacity style={styles.button} onPress={() => { handleTypeChange(t.id) }} key={t.id}>
@@ -48,6 +48,11 @@ export default () => {
 }
 
 const styles = createStyle({
+  containerAuto: {
+    // 放到 auto 高的搜索栏里时必须按内容高度撑开，写死 100% 会把父容器撑满
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   container: {
     height: '100%',
     flexGrow: 0,
