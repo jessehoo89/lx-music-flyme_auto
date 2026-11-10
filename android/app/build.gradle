@@ -127,9 +127,10 @@ android {
     }
     signingConfigs {
         release {
-            // 车机定制版使用仓库自带的 debug.keystore 签发：
-            // 换包名后与官方版共存，签名固定、后续可原地覆盖升级。
-            // 若需要正式发布签名，可通过 -PMYAPP_UPLOAD_* 参数覆盖。
+            // 正式发布使用项目自建 keystore：路径与密码通过 ~/.gradle/gradle.properties
+            // 的 MYAPP_UPLOAD_* 属性注入（该文件不入库）。
+            // 未提供属性时回退到仓库自带的 debug.keystore —— 仅用于本地验证，
+            // 公开分发会因私钥公开而可被伪造更新包，不要这样发。
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
                 storePassword MYAPP_UPLOAD_STORE_PASSWORD
@@ -154,13 +155,9 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-
-            signingConfig signingConfigs.release
         }
     }
 

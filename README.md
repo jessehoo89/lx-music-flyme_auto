@@ -38,11 +38,31 @@ adb install --user <用户ID> -r lx-music-mobile-v1.9.2-universal.apk
 - 车机多用户环境下必须显式指定 `--user`（本项目实测在 `user 12`）。装到不存在的用户空间会
   「命令成功但桌面上看不到」。
 
+### 签名与升级
+
+发布包使用项目自建证书签名：
+
+```
+CN=LX Music Car Edition, OU=flyme_auto, O=jessehoo89
+SHA-256 54:B6:A7:91:8B:6E:79:8D:93:36:46:75:70:9E:C9:BA:09:1C:F1:9C:D5:A8:FC:34:E3:6C:3E:D8:11:59:7E:C7
+```
+
+**2026-11-10 之前的版本是用仓库自带的 `debug.keystore` 签发的**（那份私钥是 Android 公开的默认
+调试密钥）。两类签名的包互不兼容，从旧版升级会提示签名不一致，需要先卸载：
+
+```bash
+adb uninstall cn.toside.music.mobile.flyme   # 会清空本地歌单与设置
+```
+
+此后同一证书签发的版本都可以直接 `-r` 覆盖升级。请只从本仓库的 Release 或源码自行构建获取，
+其它来源的包签名不同、无法升级。
+
 ## 文档
 
 - **[FLYME.md](FLYME.md)** — 适配说明、主要改动、编译步骤、实机验证清单
 - **[CHANGELOG.md](CHANGELOG.md)** — 车机版变更记录见文件顶部的 `[Car]` 章节，其后是上游原版记录
 - **[FAQ.md](FAQ.md)** — 上游移动版常见问题，大部分仍然适用
+- **[Releases](../../releases)** — 预编译 APK（自建证书签名，附 SHA-256）
 
 ## 编译
 

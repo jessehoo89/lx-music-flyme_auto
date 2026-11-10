@@ -75,22 +75,32 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 产物在 `android/app/build/outputs/apk/release/`。`assembleRelease` 会自动调用 Metro
 打包 JS，因此不需要预先手工执行 `react-native bundle`。
 
-签名：release 默认使用仓库自带的 `android/app/debug.keystore`
-（storePassword / keyPassword `android`，alias `androiddebugkey`），便于与官方版共存并
-持续覆盖升级。正式分发时请用 `-PMYAPP_UPLOAD_STORE_FILE=...` 等参数提供自己的签名。
+签名：优先使用 `~/.gradle/gradle.properties` 里的 `MYAPP_UPLOAD_*` 属性指向的项目自建
+keystore（该文件与属性均不入库）；属性缺失时回退到仓库自带的 `android/app/debug.keystore`
+（密码 `android` / alias `androiddebugkey`），那条路径仅供本地验证。
+
+> **公开分发必须用自建 keystore。** `debug.keystore` 是 Android 公开的默认调试密钥，私钥人人都有，
+> 用它签出的包任何人都能做出一模一样签名的「升级包」。
+>
+> 当前正式签名：`CN=LX Music Car Edition, O=jessehoo89`，
+> SHA256 `54:B6:A7:91:8B:6E:79:8D:93:36:46:75:70:9E:C9:BA:09:1C:F1:9C:D5:A8:FC:34:E3:6C:3E:D8:11:59:7E:C7`。
+> 与旧的 debug 签名不兼容，从旧版升级需先卸载（会清空本地歌单与设置）。
 
 ## 当前状态（2026-11-10）
 
 - `./gradlew assembleRelease` **BUILD SUCCESSFUL**（Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1）。
-- 产物 `dist/lx-music-flyme_auto-1.9.2-universal.apk`，28,891,934 B，
-  sha256 `934a1dbdadad3e05…`（含第一至第五轮全部改动）；
+- 产物 `dist/lx-music-flyme_auto-1.9.2-universal.apk`，28,891,984 B，
+  sha256 `c73539e5bf41aa0d…`（含第一至第五轮全部改动）；
   包名 `cn.toside.music.mobile.flyme`，versionCode 79 / versionName 1.9.2，
-  签名 `CN=Android Debug`（仓库自带 debug.keystore）。
+  签名 `CN=LX Music Car Edition`（项目自建 keystore，见「编译」一节的签名说明）。
 - `./node_modules/.bin/tsc --noEmit` 保持上游基线 11 处报错，本分支改动**零新增**。
 - **2026-11-09 实车验证通过**：首次播放不再被电池优化 / 通知权限弹窗阻塞、在线导入自定义源输入栏可见、
   媒体中心音源不再长时间停在「加载中」。
 - **2026-11-10 实车验证通过**：第一至第五轮 UI 改动逐项截图确认（搜索页排布、播放条高度、
   歌单详情左边栏与返回键、排行榜单列与左栏宽度），关于页文案亦已在车上核对。
+- **2026-11-10 换用自建证书签名并发首个 Release**（tag `v1.9.2-car.1`）：`apksigner` 校验
+  `CN=LX Music Car Edition` / SHA-256 `54b6a791…` 通过。因签名与旧的 debug 版不兼容，
+  车上需先卸载旧版再装（歌单与设置会清空）。
 
 ## 实机验证清单
 
