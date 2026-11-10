@@ -1,7 +1,6 @@
 import { memo, useRef, useState } from 'react'
 import { View, TouchableOpacity, FlatList, type FlatListProps } from 'react-native'
 
-import { Icon } from '@/components/common/Icon'
 
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
@@ -31,13 +30,11 @@ const ListItem = memo(({ id, activeId, onPress }: {
 
   return (
     <View style={{ ...styles.listItem, height: ITEM_HEIGHT }}>
-      {
-        active
-          ? <Icon style={styles.listActiveIcon} name="chevron-right" size={12} color={theme['c-primary-font']} />
-          : null
-      }
       <TouchableOpacity style={styles.listName} onPress={handlePress}>
-        <Text numberOfLines={1} size={16} color={active ? theme['c-primary-font'] : theme['c-font']}>{t(`setting_${id}`)}</Text>
+        <Text numberOfLines={1} size={16} color={active ? theme['c-primary-font'] : theme['c-font']}>
+          {active ? <Text size={16} color={theme['c-primary-font']}>{'›  '}</Text> : null}
+          {t(`setting_${id}`)}
+        </Text>
       </TouchableOpacity>
     </View>
   )
@@ -110,13 +107,6 @@ const styles = createStyle({
     paddingRight: 10,
     paddingLeft: 10,
     // borderBottomWidth: BorderWidths.normal,
-  },
-  listActiveIcon: {
-    // width: 18,
-    flexShrink: 0,
-    marginLeft: 3,
-    // paddingRight: 5,
-    textAlign: 'center',
   },
   listName: {
     flexWrap: 'nowrap',

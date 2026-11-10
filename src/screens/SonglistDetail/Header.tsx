@@ -1,11 +1,14 @@
 import { forwardRef, memo, useEffect, useImperativeHandle, useState } from 'react'
-import { View } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import { BorderWidths } from '@/theme'
 import ButtonBar from './ActionBar'
 import { useNavigationComponentDidAppear } from '@/navigation'
 import { NAV_SHEAR_NATIVE_IDS } from '@/config/constant'
-import { scaleSizeW } from '@/utils/pixelRatio'
+import { scaleSizeW, scaleSizeH } from '@/utils/pixelRatio'
 import { useTheme } from '@/store/theme/hook'
+import { Icon } from '@/components/common/Icon'
+import { pop } from '@/navigation'
+import commonState from '@/store/common/state'
 import Text, { AnimatedText } from '@/components/common/Text'
 import { createStyle } from '@/utils/tools'
 import Image from '@/components/common/Image'
@@ -83,8 +86,17 @@ export default forwardRef<HeaderType, HeaderProps>(({ componentId }: { component
     },
   }), [])
 
+  const back = () => {
+    void pop(commonState.componentIds.songlistDetail!)
+  }
+
   return (
     <View style={{ ...styles.container, paddingTop: statusBarHeight, borderBottomColor: theme['c-border-background'] }}>
+      <View style={styles.navBar}>
+        <TouchableOpacity onPress={back} style={styles.backBtn}>
+          <Icon name="chevron-left" size={18} />
+        </TouchableOpacity>
+      </View>
       <View style={{ flexDirection: 'row', flexGrow: 0, flexShrink: 0, padding: 10 }}>
         <Pic componentId={componentId} playCount={detailInfo.playCount} imgUrl={detailInfo.imgUrl} />
         <View style={{ flexDirection: 'column', flexGrow: 1, flexShrink: 1, paddingLeft: 5 }} nativeID={NAV_SHEAR_NATIVE_IDS.songlistDetail_title}>
@@ -110,6 +122,19 @@ const styles = createStyle({
     flexDirection: 'column',
     flexWrap: 'nowrap',
     borderBottomWidth: BorderWidths.normal,
+  },
+  navBar: {
+    flexDirection: 'row',
+    flexGrow: 0,
+    flexShrink: 0,
+    alignItems: 'center',
+    height: scaleSizeH(36),
+  },
+  backBtn: {
+    width: scaleSizeH(36),
+    height: scaleSizeH(36),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listItemImg: {
     // backgroundColor: '#eee',

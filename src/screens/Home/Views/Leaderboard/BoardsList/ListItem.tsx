@@ -4,7 +4,6 @@ import { useTheme } from '@/store/theme/hook'
 import Button, { type BtnType } from '@/components/common/Button'
 import { createStyle } from '@/utils/tools'
 import { type BoardItem } from '@/store/leaderboard/state'
-import { Icon } from '@/components/common/Icon'
 
 // index={index}
 // longPressIndex={longPressIndex}
@@ -42,12 +41,11 @@ export default ({ item, activeId, index, longPressIndex, onBoundChange, onShowMe
       key={item.id} onLongPress={setPosition}
       onPress={() => { onBoundChange(item) }}
     >
-      {
-        active
-          ? <Icon style={styles.listActiveIcon} name="chevron-right" size={12} color={theme['c-primary-font']} />
-          : null
-      }
-      <Text style={styles.listName} size={14} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']}>{item.name}</Text>
+      <Text style={styles.listName} size={14} textBreakStrategy="simple" color={active ? theme['c-primary-font-active'] : theme['c-font']}>
+        {/* 箭头用字符写在同一段文本里，基线与歌名一致，不会像图标字体那样下沉 */}
+        {active ? <Text size={14} color={theme['c-primary-font']}>{'›  '}</Text> : null}
+        {item.name}
+      </Text>
     </Button>
   )
 }
@@ -61,13 +59,6 @@ const styles = createStyle({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'center',
-  },
-  listActiveIcon: {
-    // width: 18,
-    flexShrink: 0,
-    marginLeft: 3,
-    // paddingRight: 5,
-    textAlign: 'center',
   },
   listName: {
     justifyContent: 'center',

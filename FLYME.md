@@ -82,12 +82,13 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 ## 当前状态（2026-11-10）
 
 - `./gradlew assembleRelease` **BUILD SUCCESSFUL**（Gradle 8.8 / JDK 17 / SDK 36 / NDK 26.1.10909125 / CMake 3.22.1）。
-- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,891,154 B，
-  sha256 `266504b89e43acc8…`（含「三项车机交互修复」与「第二轮 UI 布局修复」）；包名 `cn.toside.music.mobile.flyme`，
-  versionCode 79 / versionName 1.9.2，签名 `CN=Android Debug`（仓库自带 debug.keystore）。
+- 产物 `lx-music-mobile-v1.9.2-universal.apk`，28,891,607 B，
+  sha256 `93aae121c8ffd1b2…`（含「三项车机交互修复」「第二轮 UI 布局」「第三轮 UI 修复」）；
+  包名 `cn.toside.music.mobile.flyme`，versionCode 79 / versionName 1.9.2，
+  签名 `CN=Android Debug`（仓库自带 debug.keystore）。
 - **2026-11-09 实车验证通过**：首次播放不再被电池优化 / 通知权限弹窗阻塞、在线导入自定义源输入栏可见、
-  媒体中心音源不再长时间停在「加载中」。第二轮 UI 布局改动只过了编译，尚未实车确认。
-- 车机当前离线（`adb connect 172.28.197.127:5555` 无响应），上线后按下面清单继续验证。
+  媒体中心音源不再长时间停在「加载中」。
+- 第二、三轮 UI 改动只过了编译，**尚未实车确认**（车机离线：`adb connect 172.28.197.127:5555` 无响应）。
 
 ## 实机验证清单
 
@@ -140,3 +141,14 @@ echo "sdk.dir=/path/to/your/android/sdk" > local.properties
 - **字体大小预览**：`preview.height: 45` 改 `minHeight`，预览文字按字号自然撑高。
 - **关于页**：新增本项目介绍（车机独立适配版、内置媒体中心接入、Apache-2.0、基于上游 v1.9.2）与源码地址，版本号读 `process.versions.app`。
 - 设置页主内容区 `flex: 0` 改 `flex: 1` + `minWidth: 0`，避免大字号下右侧内容被挤窄。
+
+## 车机 UI 修复（第三轮）
+
+1. **列表选中符号下沉**：排行榜左栏 `BoardsList/ListItem` 与设置菜单 `NavList` 原来用 IcoMoon 图标字体的
+   `chevron-right`，图标字形贴在基线附近、行框又比字形高，`>` 整体掉到文字下方（图标字体度量与系统字体的
+   基线不同，靠 `alignItems: 'center'` 居中盒子修正不了）。改为把 `›` 写进同一段 `Text`
+   （嵌套 `Text` 只改颜色），基线与歌名天然一致，也不再依赖图标字体度量。
+2. **歌单详情页缺返回按钮**：`SonglistDetail/Header` 顶部补一条 `navBar`（`scaleSizeH(36)` 高），
+   左侧 `<` 调 `pop(commonState.componentIds.songlistDetail)`，与播放详情页返回按钮同一套写法。
+3. **播放详情标题主次不分**：歌名 `size` 14 → 16，歌手保持 12 号 `c-font-label` 灰、间距 8 → 12，
+   与排行榜列表「歌名 + 灰色歌手」的层次对齐；竖屏 `PlayDetail/Vertical` 同步。
